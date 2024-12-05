@@ -1,7 +1,7 @@
-Scaling [--solutionname--] With Kubernetes
+Scaling [abc-7042] With Kubernetes
 ===========================
 
-Generated On: --datetime-- UTC
+Generated On: 2024-12-05 02:00:37 UTC
 
 You can scale your solution with Kubernetes.  To do so, will will need to apply the following YAML files to your Kubernetes cluster.
 
@@ -33,13 +33,13 @@ You can scale your solution with Kubernetes.  To do so, will will need to apply 
    sudo systemctl restart docker
 
 
-Based on your TML solution [--solutionname--] - if you want to scale your application with Kubernetes - you will need to apply the following YAML files.
+Based on your TML solution [abc-7042] - if you want to scale your application with Kubernetes - you will need to apply the following YAML files.
 
 .. list-table::
 
    * - **YML File**
      - **Description**
-   * - :ref:`--solutionnamefile--`
+   * - :ref:`abc-7042.yml`
      - This is your main solution YAML file.  
  
        It MUST be applied to your Kubernetes cluster.
@@ -72,13 +72,13 @@ kubectl Create command
 
 .. code-block:: YAML
 
-   --kubectl--
+   kubectl create -f mysql-storage.yml -f mysql-db-deployment.yml -f qdrant.yml -f privategpt.yml -f abc-7042.yml
 
---solutionnamefile--
+abc-7042.yml
 ------------------------
 
 .. important::
-   Copy and Paste this YAML file: --solutionnamefile-- - and save it locally.
+   Copy and Paste this YAML file: abc-7042.yml - and save it locally.
 
 .. attention::
 
@@ -98,8 +98,110 @@ kubectl Create command
 
 .. code-block:: YAML
 
-   ################# --solutionnamefile--
-   --solutionnamecode--
+   ################# abc-7042.yml
+   
+     apiVersion: apps/v1
+     kind: Deployment
+     metadata:
+       name: abc-7042
+     spec:
+       selector:
+         matchLabels:
+           app: abc-7042
+       replicas: 3 # tells deployment to run 1 pods matching the template
+       template:
+         metadata:
+           labels:
+             app: abc-7042
+         spec:
+           containers:
+           - name: abc-7042
+             image: hardikdagar0207/abc-7042-amd64:latest
+             volumeMounts:
+             - name: dockerpath
+               mountPath: /var/run/docker.sock
+             ports:
+             - containerPort: 8883
+             - containerPort: 34611
+             - containerPort: 46125
+             - containerPort: 34139
+             env:
+             - name: TSS
+               value: '0'
+             - name: SOLUTIONNAME
+               value: 'abc-7042'
+             - name: SOLUTIONDAG
+               value: 'solution_preprocessing_ai_mqtt_dag-abc-7042'
+             - name: GITUSERNAME
+               value: 'hardikdagar7'
+             - name: GITREPOURL
+               value: 'https://github.com/hardikdagar7/raspberrypi.git'
+             - name: SOLUTIONEXTERNALPORT
+               value: '34139'
+             - name: CHIP
+               value: 'amd64'
+             - name: SOLUTIONAIRFLOWPORT
+               value: '34611'
+             - name: SOLUTIONVIPERVIZPORT
+               value: '46125'
+             - name: DOCKERUSERNAME
+               value: 'hardikdagar0207'
+             - name: CLIENTPORT
+               value: '8883'
+             - name: EXTERNALPORT
+               value: '45759'
+             - name: KAFKACLOUDUSERNAME
+               value: ''
+             - name: VIPERVIZPORT
+               value: '9005'
+             - name: MQTTUSERNAME
+               value: 'hardikdagar0207'
+             - name: AIRFLOWPORT
+               value: '9000'
+             - name: GITPASSWORD
+               value: '<ENTER GITHUB PASSWORD>'
+             - name: KAFKACLOUDPASSWORD
+               value: '<Enter API secret>'
+             - name: MQTTPASSWORD
+               value: '<ENTER MQTT PASSWORD>'
+             - name: READTHEDOCS
+               value: '<ENTER READTHEDOCS TOKEN>'
+             - name: qip 
+               value: 'privategpt-service' # This is private GPT service in kubernetes
+             - name: KUBE
+               value: '1'
+           volumes: 
+           - name: dockerpath
+             hostPath:
+               path: /var/run/docker.sock
+   ---
+     apiVersion: v1
+     kind: Service
+     metadata:
+       name: abc-7042-service
+       labels:
+         app: abc-7042-service
+     spec:
+       type: NodePort #Exposes the service as a node ports
+       ports:
+       - port: 8883
+         name: p1
+         protocol: TCP
+         targetPort: 8883
+       - port: 34611
+         name: p2
+         protocol: TCP
+         targetPort: 34611
+       - port: 46125
+         name: p3
+         protocol: TCP
+         targetPort: 46125
+       - port: 34139
+         name: p4
+         protocol: TCP
+         targetPort: 34139
+       selector:
+         app: abc-7042
 
 .. tip::
 
@@ -356,13 +458,13 @@ To visualize the dashboard you need to forward ports to your solution **deployme
 
 .. code-block::
 
-   --kube-portforward--
+   kubectl port-forward deployment/abc-7042 46125:46125
 
 After you forward the ports then copy/paste the viusalization URL below and run your dashboard.
 
 .. code-block::
 
-   --visualizationurl--
+   http://localhost:46125/tml-cisco-network-privategpt-monitor.html?topic=cisco-network-preprocess,cisco-network-privategpt&offset=-1&groupid=&rollbackoffset=400&topictype=prediction&append=0&secure=1
 
 Kubernetes Pod Access Commands
 ---------------------
